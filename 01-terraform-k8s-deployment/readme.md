@@ -73,6 +73,7 @@ terraform destroy
 - Whole setup can be destroyed and recreated with `terraform destroy` and `terraform apply`
 
 ![Running pods](images/pods.png)
+![Terraform apply output](images/terraform-apply.png)
 
 
 ## 🧠 What I Learned
