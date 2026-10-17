@@ -49,83 +49,9 @@ terraform --version
 
 ### `provider.tf`
 Configures the Kubernetes provider and points to the kubeconfig.
-```hcl
-terraform {
-  required_providers {
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.11.0"
-    }
-  }
-}
-
-provider "kubernetes" {
-  config_path = "/root/.kube/config"
-}
-```
-> `/root/.kube/config` is the path used in the lab. On your own machine, use `~/.kube/config`.
 
 ### `main.tf`
 Defines the Deployment and the Service.
-```hcl
-resource "kubernetes_deployment" "frontend" {
-  metadata {
-    name = "frontend"
-    labels = {
-      name = "frontend"
-    }
-  }
-
-  spec {
-    replicas = 4
-
-    selector {
-      match_labels = {
-        name = "webapp"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          name = "webapp"
-        }
-      }
-
-      spec {
-        container {
-          name  = "simple-webapp"
-          image = "kodekloud/webapp-color:v1"
-
-          port {
-            container_port = 8080
-          }
-        }
-      }
-    }
-  }
-}
-
-resource "kubernetes_service" "webapp_service" {
-  metadata {
-    name = "webapp-service"
-  }
-
-  spec {
-    type = "NodePort"
-
-    selector = {
-      name = "webapp"
-    }
-
-    port {
-      port        = 8080
-      target_port = 8080
-      node_port   = 30080
-    }
-  }
-}
-```
 
 ## ▶️ Run It
 ```bash
@@ -148,19 +74,15 @@ terraform destroy
 
 ![Running pods](images/pods.png)
 
-## 🐞 Issues I Hit
-<!-- Fill this in with what really happened. Format: Problem → Cause → Fix -->
-- _Example format:_ Pods stayed in `ContainerCreating` → image was still pulling → waited, confirmed with `kubectl describe pod`
 
 ## 🧠 What I Learned
 - How Terraform maps to Kubernetes objects (Deployment, Service, labels, selectors)
 - Why a Service selector must match the pod labels exactly
 - The difference between `port`, `target_port`, and `node_port`
 - Reading `terraform plan` before applying
+- Finding the arguments for each resource (required vs optional, nested blocks) in the Terraform Registry documentation for the provider, and matching the doc version to the pinned provider version
 
 ## 🔜 Next Improvements
 - [ ] Move values into `variables.tf` and add `outputs.tf`
 - [ ] Add a dedicated namespace, resource limits, and a readiness probe
 - [ ] Use a kubeconfig variable instead of a hardcoded path
-- [ ] Replace the demo image with my own app built by a CI pipeline
-- [ ] Deploy through ArgoCD (GitOps)
