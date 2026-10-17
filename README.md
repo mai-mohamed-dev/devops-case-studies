@@ -11,6 +11,20 @@ Mini case studies from my DevOps learning journey. Each one covers a small, real
 |---|------------|-------|------|--------|
 | 01 | [Deploying a web app to Kubernetes with Terraform](./01-terraform-k8s-deployment) | Terraform, Kubernetes | 🧪 Lab-based | ✅ Done |
 
+## 📁 Repository Structure
+```
+devops-case-studies/
+├── README.md                      
+├── LICENSE
+├── .gitignore
+└── 01-terraform-k8s-deployment/
+    ├── README.md                 
+    ├── provider.tf
+    ├── main.tf
+    └── images/                   
+```
+
+New case studies are added as numbered folders, each with its own README and code.
 ## 🧭 How Each Case Study Is Structured
 Every folder has its own README with:
 - **Scenario:** what problem it addresses
