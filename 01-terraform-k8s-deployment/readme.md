@@ -72,9 +72,6 @@ terraform destroy
 - App reachable on port 30080
 - Whole setup can be destroyed and recreated with `terraform destroy` and `terraform apply`
 
-![Running pods](images/pods.png)
-![Terraform apply output](images/terraform-apply.png)
-
 
 ## 🧠 What I Learned
 - How Terraform maps to Kubernetes objects (Deployment, Service, labels, selectors)
