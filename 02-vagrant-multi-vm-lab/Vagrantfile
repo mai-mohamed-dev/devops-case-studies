@@ -4,8 +4,6 @@ Vagrant.configure("2") do |config|
   
   # VirtualBox Provider Configuration 
   config.vm.define "web" do |web|
-    ## Display the VirtualBox GUI when booting the machine
-    #   vb.gui = true
     web.vm.hostname = "web"
     ## Customize the VM:
     web.vm.provider "virtualbox" do |vb|
@@ -13,14 +11,11 @@ Vagrant.configure("2") do |config|
       vb.cpus = 1
       vb.memory = 512
     end
-    ## Customize the disk size:
-    web.vm.disksize = "5GB"
     ## Enable provisioning with a shell script 
-    web.vm.provision "shell", inline: <<-SHELL
-      sudo dnf install -y epel-release
-      sudo dnf install -y nginx
-      sudo systemctl enable --now nginx
-    SHELL
+    web.vm.provision "shell", path: "web_provision.sh"
+    # Create a private network, which allows host-only access to the machine using a specific IP.
+    web.vm.network "private_network", ip: " 192.168.56.10"
+    web.vm.network "forwarded_port", guest: 80, host: 8080
   end
   config.vm.define "app" do |app|
     ## Display the VirtualBox GUI when booting the machine
@@ -32,15 +27,14 @@ Vagrant.configure("2") do |config|
       vb.cpus = 1
       vb.memory = 1024
     end
-    ## Customize the disk size:
-    app.vm.disksize = "5GB"
     ## Enable provisioning with a shell script 
     app.vm.provision "shell", inline: <<-SHELL
-      sudo dnf install -y epel-release
-      sudo dnf install -y python3 python3-pip
-      sudo pip3 install flask
-      sudo systemctl enable --now flask
+      dnf install -y python3 python3-pip
+      pip3 install flask
+      systemctl enable --now flask
     SHELL
+    # Create a private network, which allows host-only access to the machine using a specific IP.
+    app.vm.network "private_network", ip: " 192.168.56.11"
   end
   config.vm.define "db" do |db|
     ## Display the VirtualBox GUI when booting the machine
@@ -53,25 +47,18 @@ Vagrant.configure("2") do |config|
       vb.memory = 2048
     end
     ## Customize the disk size:
-    db.vm.disksize = "10GB"
+    db.vm.disk :disk, size: "5GB", name: "pgdata"
     ## Enable provisioning with a shell script 
     db.vm.provision "shell", inline: <<-SHELL
-      sudo dnf install -y epel-release
-      sudo dnf install -y postgresql
-      sudo systemctl enable --now postgresql
+      dnf install -y postgresql
+      systemctl enable --now postgresql
     SHELL
+    # Create a private network, which allows host-only access to the machine using a specific IP.
+    db.vm.network "private_network", ip: " 192.168.56.12"
   end
 
   # Disable automatic box update checking
   config.vm.box_check_update = false
-
-  # Create a private network, which allows host-only access to the machine using a specific IP.
-  config.vm.network "private_network", ip: "192.168.33.10"
-
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
 
   # Share an additional folder to the guest VM
   config.vm.synced_folder "./data", "/vagrant_data"
