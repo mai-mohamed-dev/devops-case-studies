@@ -16,6 +16,7 @@ Vagrant.configure("2") do |config|
     # Create a private network, which allows host-only access to the machine using a specific IP.
     web.vm.network "private_network", ip: " 192.168.56.10"
     web.vm.network "forwarded_port", guest: 80, host: 8080
+    web.vm.synced_folder "./src/web_src", "/var/www/myapp"
   end
   config.vm.define "app" do |app|
     ## Display the VirtualBox GUI when booting the machine
@@ -61,6 +62,6 @@ Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
 
   # Share an additional folder to the guest VM
-  config.vm.synced_folder "./data", "/vagrant_data"
+  #config.vm.synced_folder "./src", "/vagrant_data"
 
 end

@@ -15,4 +15,6 @@ firewall-cmd --reload
 # SELinux: allow Nginx to make outgoing network connections (needed to proxy to the app VM)
 # -P makes the change permanent across reboots
 setsebool -P httpd_can_network_connect 1
-
+mkdir -p /var/www/myapp
+chown -R vagrant:vagrant /var/www/myapp
+chmod -R 755 /var/www/myapp
