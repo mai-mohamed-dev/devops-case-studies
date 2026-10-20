@@ -18,3 +18,35 @@ setsebool -P httpd_can_network_connect 1
 mkdir -p /var/www/myapp
 chown -R vagrant:vagrant /var/www/myapp
 chmod -R 755 /var/www/myapp
+
+cat << 'EOF' > /etc/nginx/conf.d/myapp.conf
+server {
+    listen 80;
+    server_name myapp.com;
+    root /var/www/myapp;
+    index index.html;
+
+    # custom error pages
+    error_page 404 /404.html;
+    location = /404.html {
+        root /var/www/myapp;
+    }
+    # Serve your static frontend app
+    location / {
+        root /var/www/myapp;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+    # Optional: Proxy API requests to backend server later
+    # location /api/ {
+    #     proxy_pass http://127.0.0.1:8000/;
+    #     proxy_set_header Host $host;
+    #     proxy_set_header X-Real-IP $remote_addr;
+    # }
+}
+EOF
+
+#dns configuration (Skip If you are using a public DNS server)
+cat << 'EOF' > /etc/hosts
+192.168.56.10 myapp.com
+EOF
