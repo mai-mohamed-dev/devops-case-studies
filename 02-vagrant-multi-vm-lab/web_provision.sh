@@ -37,16 +37,22 @@ server {
         index index.html;
         try_files $uri $uri/ /index.html;
     }
-    # Optional: Proxy API requests to backend server later
-    # location /api/ {
-    #     proxy_pass http://127.0.0.1:8000/;
-    #     proxy_set_header Host $host;
-    #     proxy_set_header X-Real-IP $remote_addr;
-    # }
+    # Reverse proxy: /api/health  ->  http://app:5000/health
+    location /api/ {
+        proxy_pass http://192.168.56.10:5000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_connect_timeout 3s;
+    }
 }
 EOF
 
 #dns configuration (Skip If you are using a public DNS server)
-cat << 'EOF' > /etc/hosts
-192.168.56.10 myapp.com
-EOF
+#cat << 'EOF' > /etc/hosts
+#192.168.56.10 myapp.com
+#EOF
+
+nginx -t
+systemctl enable nginx
+systemctl restart nginx
